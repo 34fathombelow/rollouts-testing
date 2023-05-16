@@ -20,7 +20,6 @@ jobs:
       controller-meta-tags: ${{ steps.controller-meta.outputs.tags }}
       plugin-meta-tags: ${{ steps.plugin-meta.outputs.tags }}
       platforms: ${{ steps.platform-matrix.outputs.platform-matrix }}
-  
 
     steps:
       - name: Docker meta (controller)
@@ -32,7 +31,6 @@ jobs:
           tags: |
             type=ref,event=branch,enable=${{ github.ref != 'refs/heads/master'}}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
-          
 
       - name: Docker meta (plugin)
         id: plugin-meta
@@ -43,7 +41,7 @@ jobs:
           tags: |
             type=ref,event=branch,enable=${{ github.ref != 'refs/heads/master'}}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
-          
+
       # avoid building linux/arm64 for PRs since it takes so long
       - name: Set Platform Matrix
         id: platform-matrix
