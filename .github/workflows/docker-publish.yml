@@ -31,7 +31,7 @@ jobs:
             quay.io/34fathombelow/argo-rollouts
           tags: |
             type=ref,event=branch,enable=${{ github.ref != 'refs/heads/master'}}
-            type=raw,value=latest,enable==${{ github.ref == 'refs/heads/master' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
           
 
       - name: Docker meta (plugin)
@@ -42,7 +42,7 @@ jobs:
             quay.io/34fathombelow/kubectl-argo-rollouts
           tags: |
             type=ref,event=branch,enable=${{ github.ref != 'refs/heads/master'}}
-            type=raw,value=latest,enable==${{ github.ref == 'refs/heads/master' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
           
       # avoid building linux/arm64 for PRs since it takes so long
       - name: Set Platform Matrix
