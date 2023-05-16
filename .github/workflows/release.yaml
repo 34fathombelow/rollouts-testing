@@ -44,7 +44,8 @@ jobs:
       quay_password: ${{ secrets.QUAY_ROBOT_TOKEN }}
 
   controller-image-provenance:
-      needs: [controller-image]
+      needs:
+        - controller-image
       permissions:
         actions: read # for detecting the Github Actions environment.
         id-token: write # for creating OIDC tokens for signing.
@@ -52,14 +53,15 @@ jobs:
       # Must be refernced by a tag. https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/container/README.md#referencing-the-slsa-generator
       uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.6.0
       with:
-        image: quay.io/34fathombelow/argo-rollouts
+        image: quay.io/34fathombelow/kubectl-argo-rollouts
         digest: ${{ needs.controller-image.outputs.image-digest }}
       secrets:
         registry-username: ${{ secrets.QUAY_USERNAME }}
         registry-password: ${{ secrets.QUAY_ROBOT_TOKEN }}
 
   plugin-image-provenance:
-      needs: [plugin-image]
+      needs:
+        - plugin-image
       permissions:
         actions: read # for detecting the Github Actions environment.
         id-token: write # for creating OIDC tokens for signing.
@@ -75,9 +77,6 @@ jobs:
 
 
   release-artifacts:
-    needs:
-      - controller-image
-      - plugin-image
     permissions:
       contents: write  # for softprops/action-gh-release to create GitHub release
     runs-on: ubuntu-latest
@@ -131,12 +130,12 @@ jobs:
       - name: Generate hashes for provenance
         id: hash
         run: |
-          echo "hashes=$(sha256sum dist/kubectl-argo-rollouts-* dist/argo-rollouts-checksums.txt \ 
-          manifests/*.yaml | base64 -w0)" >> "$GITHUB_OUTPUT"
+          echo "hashes=$(sha256sum ./dist/kubectl-argo-rollouts-* ./dist/argo-rollouts-checksums.txt ./manifests/*.yaml | base64 -w0)" >> "$GITHUB_OUTPUT"
 
 
   release-artifacts-provenance:
-    needs: [release-artifacts]
+    needs:
+      - release-artifacts
     permissions:
       actions: read # for detecting the Github Actions environment
       id-token: write # Needed for provenance signing and ID
@@ -153,6 +152,7 @@ jobs:
     name: Create Sbom and sign assets
     needs:
       - release-artifacts
+      - release-artifacts-provenance
     permissions:
       contents: write # Needed for release uploads
       id-token: write # Needed for signing Sbom
@@ -225,8 +225,6 @@ jobs:
 
   post-release:
     needs:
-      - controller-image
-      - plugin-image
       - release-artifacts
       - generate-sbom
     permissions:
