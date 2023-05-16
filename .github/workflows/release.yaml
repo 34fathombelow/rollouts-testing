@@ -130,7 +130,7 @@ jobs:
       - name: Generate hashes for provenance
         id: hash
         run: |
-          echo "hashes=$(sha256sum ./dist/kubectl-argo-rollouts-* ./dist/argo-rollouts-checksums.txt ./manifests/*.yaml | base64 -w0)" >> "$GITHUB_OUTPUT"
+          echo "hashes=$(sha256sum ./dist/kubectl-argo-rollouts-* ./manifests/*.yaml | base64 -w0)" >> "$GITHUB_OUTPUT"
 
 
   release-artifacts-provenance:
